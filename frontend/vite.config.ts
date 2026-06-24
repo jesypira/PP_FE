@@ -8,4 +8,7 @@ export default defineConfig({
     react(),
     tailwindcss(), // <-- Add this plugin to the array
   ],
+  build: {
+    cssMinify: 'esbuild' 
+  }
 })
