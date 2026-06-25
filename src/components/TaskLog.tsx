@@ -10,13 +10,13 @@ interface TaskLogProps {
   onTaskChanged: () => void;
 }
 
+const token = localStorage.getItem('token');
+
 export default function TaskLog({ onTaskChanged}: TaskLogProps) {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [newTitle, setNewTitle] = useState('');
 
 useEffect(() => {
-  const token = localStorage.getItem('token');
-
   fetch(`${import.meta.env.VITE_API_URL}/api/tasks`, {
     headers: {
       'Content-Type': 'application/json',
@@ -25,20 +25,18 @@ useEffect(() => {
   })
     .then((res) => {
       if (!res.ok) {
-        throw new Error('Falha ao carregar as tasks');
+        throw new Error('Error');
       }
       return res.json();
     })
     .then((data) => setTasks(data))
-    .catch((err) => console.error('Erro ao carregar as quests:', err));
+    .catch((err) => console.error('Error', err));
 
 }, []);
 
   const handleAddTask = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newTitle.trim()) return;
-
-    const token = localStorage.getItem('token');
 
     console.log('token: ',token)
 
@@ -59,12 +57,11 @@ useEffect(() => {
         setNewTitle('');
       }
     } catch (err) {
-      console.error('Erro ao criar quest:', err);
+      console.error('Error:', err);
     }
   };
 
   const handleToggleTask = async (id: number) => {
-    const token = localStorage.getItem('token');
     try {
       const response = await fetch(`${import.meta.env.VITE_API_URL}/api/tasks/${id}/toggle`, {
         method: 'PUT',
@@ -79,7 +76,25 @@ useEffect(() => {
         onTaskChanged();
       }
     } catch (err) {
-      console.error('Erro ao atualizar quest:', err);
+      console.error('Error:', err);
+    }
+  };
+
+  const [taskToDelete, setTaskToDelete] = useState<any | null>(null);
+  const handleDeleteTask = async (taskId: number) => {
+    try {
+      await fetch(`${import.meta.env.VITE_API_URL}/api/tasks/${taskId}`, { method: 'DELETE',
+         headers: { 'Content-Type': 'application/json' ,
+                   'Authorization': token || ''
+        }
+       });
+      
+      setTasks(tasks.filter(t => t.id !== taskId));
+    } catch (err) {
+      console.error("Error", err);
+    } finally {
+      setTaskToDelete(null);
+       onTaskChanged();
     }
   };
 
@@ -123,7 +138,7 @@ useEffect(() => {
                   : 'bg-slate-950 border-slate-800/80 hover:border-purple-500/50 text-slate-200'
               }`}
             >
-              <span className="text-sm font-mono">{task.title}</span>
+              <span className="text-sm font-mono flex-1 pr-4 truncate">{task.title}</span>
               <span className={`text-xs px-2 py-0.5 rounded-md font-mono ${
                 task.completed 
                   ? 'bg-emerald-950/50 text-emerald-400 border border-emerald-500/20' 
@@ -131,10 +146,53 @@ useEffect(() => {
               }`}>
                 {task.completed ? 'COMPLETED' : 'ACTIVE'}
               </span>
+              <button
+            onClick={(e) => {
+              e.stopPropagation(); 
+              setTaskToDelete(task);
+            }}
+            className="text-slate-500 hover:text-red-400 transition-colors p-1"
+            title="Abandon Quest"
+          >
+            🗑️
+          </button>
             </div>
           ))
         )}
       </div>
+
+      {taskToDelete && (
+  <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+    <div className="w-full max-w-sm bg-slate-900 border border-slate-800 p-6 rounded-2xl shadow-2xl text-center">
+      <div className="text-3xl mb-2">❌</div>
+      <h3 className="text-lg font-bold font-mono uppercase tracking-wider text-slate-200">
+        Abandon Quest?
+      </h3>
+      <p className="text-xs text-slate-400 mt-2 font-mono">
+        Are you sure you want to abandon: <br/>
+        <span className="text-red-400 font-semibold">"{taskToDelete.title}"</span>? <br/>
+        Progress will be lost forever.
+      </p>
+
+      <div className="mt-6 flex space-x-3">
+        <button
+          onClick={() => setTaskToDelete(null)}
+          className="flex-1 py-2 px-4 bg-slate-950 border border-slate-800 hover:bg-slate-800 text-slate-300 font-semibold font-mono text-xs rounded-xl transition-all uppercase tracking-wider"
+        >
+          Nevermind
+        </button>
+        <button
+          onClick={() => handleDeleteTask(taskToDelete.id)}
+          className="flex-1 py-2 px-4 bg-gradient-to-r from-red-600 to-rose-700 hover:from-red-500 hover:to-rose-600 text-white font-bold font-mono text-xs rounded-xl transition-all shadow-lg shadow-red-950/50 uppercase tracking-wider"
+        >
+          Abandon
+        </button>
+      </div>
+    </div>
+  </div>
+)}
     </div>
   );
+
 }
+

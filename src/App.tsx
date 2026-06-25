@@ -42,7 +42,7 @@ export default function App() {
             
             <div className="mt-4 grid grid-cols-3 gap-4 font-mono text-xs text-center">
               <div className="bg-slate-950 p-3 rounded-xl border border-slate-800/50">
-                ⭐ LVL: {user.level || 1}
+                ⭐ LVL: {user.level.level || 1}
               </div>
               <div className="bg-slate-950 p-3 rounded-xl border border-slate-800/50">
                 🔥 STREAK: {user.dailyStreak || 0}
