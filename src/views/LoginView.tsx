@@ -54,7 +54,7 @@ export default function LoginView({ onLoginSuccess }: LoginViewProps) {
             Pira Project
           </h1>
           <p className="text-sm text-slate-400 mt-1">
-            {isRegister ? 'Create your character and start your quest' : 'Welcome back, Hero. Authenticate your profile'}
+            {isRegister ? 'Create your profile and start your quest' : 'Welcome back, authenticate your profile'}
           </p>
         </div>
 
