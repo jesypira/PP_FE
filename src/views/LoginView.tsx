@@ -15,9 +15,6 @@ export default function LoginView({ onLoginSuccess }: LoginViewProps) {
     e.preventDefault();
     setError('');
     setLoading(true);
-
-    localStorage.removeItem('token');
-
     const endpoint = isRegister ? '/api/user/register' : '/api/user/login';
     
     try {
@@ -72,7 +69,7 @@ export default function LoginView({ onLoginSuccess }: LoginViewProps) {
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
             <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2 font-mono">
-              Hero Name
+              Name
             </label>
             <input
               type="text"
@@ -80,13 +77,12 @@ export default function LoginView({ onLoginSuccess }: LoginViewProps) {
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               className="w-full px-4 py-3 bg-slate-950 border border-slate-800 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 rounded-xl outline-none text-slate-200 transition-all font-medium"
-              placeholder="e.g., PiraHero"
             />
           </div>
 
           <div>
             <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2 font-mono">
-              Secret Password
+              Password
             </label>
             <input
               type="password"
@@ -94,7 +90,6 @@ export default function LoginView({ onLoginSuccess }: LoginViewProps) {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="w-full px-4 py-3 bg-slate-950 border border-slate-800 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 rounded-xl outline-none text-slate-200 transition-all font-medium"
-              placeholder="••••••••"
             />
           </div>
 
@@ -103,7 +98,7 @@ export default function LoginView({ onLoginSuccess }: LoginViewProps) {
             disabled={loading}
             className="w-full py-3 px-4 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold rounded-xl transition-all shadow-lg shadow-indigo-950/50 active:scale-[0.98] disabled:opacity-50 font-mono text-sm uppercase tracking-wider"
           >
-            {loading ? 'Processing...' : isRegister ? 'Initialize Character' : 'Enter World'}
+            {loading ? 'Processing...' : isRegister ? 'Register' : 'Login'}
           </button>
         </form>
 
@@ -116,7 +111,7 @@ export default function LoginView({ onLoginSuccess }: LoginViewProps) {
             }}
             className="text-xs font-medium text-slate-400 hover:text-indigo-400 transition-colors font-mono uppercase tracking-wide"
           >
-            {isRegister ? 'Already registered? Enter World' : 'First time playing? Create an account'}
+            {isRegister ? 'Already registered? Login' : 'First time? Create an account'}
           </button>
         </div>
 

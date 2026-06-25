@@ -10,41 +10,32 @@ interface TaskLogProps {
   onTaskChanged: () => void;
 }
 
-const token = localStorage.getItem('token');
-
 export default function TaskLog({ onTaskChanged}: TaskLogProps) {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [newTitle, setNewTitle] = useState('');
 
-useEffect(() => {
-  fetch(`${import.meta.env.VITE_API_URL}/api/tasks`, {
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': token || ''
-    }
-  })
-    .then((res) => {
-      if (!res.ok) {
-        throw new Error('Error');
+  useEffect(() => {
+    fetch(`${import.meta.env.VITE_API_URL}/api/tasks`, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': localStorage.getItem('token') || ''
       }
-      return res.json();
     })
-    .then((data) => setTasks(data))
-    .catch((err) => console.error('Error', err));
+      .then((res) => res.json())
+      .then((data) => setTasks(data))
+      .catch((err) => console.error('Error', err));
 
-}, []);
+  }, []);
 
   const handleAddTask = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newTitle.trim()) return;
 
-    console.log('token: ',token)
-
     try {
       const response = await fetch(`${import.meta.env.VITE_API_URL}/api/tasks/new`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' ,
-                   'Authorization': token || ''
+                   'Authorization': localStorage.getItem('token') || ''
         },
         body: JSON.stringify({
           title: newTitle
@@ -66,7 +57,7 @@ useEffect(() => {
       const response = await fetch(`${import.meta.env.VITE_API_URL}/api/tasks/${id}/toggle`, {
         method: 'PUT',
          headers: { 'Content-Type': 'application/json' ,
-                   'Authorization': token || ''
+                   'Authorization': localStorage.getItem('token') || ''
         }
       });
 
@@ -85,7 +76,7 @@ useEffect(() => {
     try {
       await fetch(`${import.meta.env.VITE_API_URL}/api/tasks/${taskId}`, { method: 'DELETE',
          headers: { 'Content-Type': 'application/json' ,
-                   'Authorization': token || ''
+                   'Authorization': localStorage.getItem('token') || ''
         }
        });
       

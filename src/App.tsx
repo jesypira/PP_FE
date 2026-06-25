@@ -9,12 +9,16 @@ export default function App() {
     setuser(userData);
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem('token'); 
+    setuser(null);                     
+  };
+
   const fetchPlayerData = async () => {
     if (!user?.id) return;
     const token = localStorage.getItem('token');
     
     try {
-      // Ajuste a URL para a rota onde você busca os dados do seu usuário por ID
       const response = await fetch(`${import.meta.env.VITE_API_URL}/api/user`, {
         headers: { 'Authorization': token || '' }
       });
@@ -34,7 +38,15 @@ export default function App() {
       ) : (
         <div className="space-y-6">
           {/* Dashboard / user Hub */}
-          <div className="max-w-xl mx-auto bg-slate-900 border border-slate-800 p-6 rounded-2xl shadow-xl">
+              <div className="max-w-xl mx-auto bg-slate-900 border border-slate-800 p-6 rounded-2xl shadow-xl relative">
+  
+            <button 
+              onClick={handleLogout}
+              className="absolute top-4 right-4 text-xs font-mono px-2.5 py-1 bg-red-950/40 text-red-400 hover:bg-red-900/40 border border-red-900/40 rounded-lg transition-all uppercase tracking-wider"
+            >
+              Logout 
+            </button>
+
             <h2 className="text-2xl font-bold font-mono text-indigo-400">
               Welcome, {user.username}!
             </h2>
