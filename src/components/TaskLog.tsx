@@ -43,7 +43,7 @@ useEffect(() => {
     console.log('token: ',token)
 
     try {
-      const response = await fetch('${import.meta.env.VITE_API_URL}/api/tasks/new', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/tasks/new`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' ,
                    'Authorization': token || ''
