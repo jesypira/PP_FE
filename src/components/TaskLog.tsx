@@ -134,11 +134,16 @@ useEffect(() => {
               onClick={() => handleToggleTask(task.id)}
               className={`flex items-center justify-between p-3 rounded-xl border transition-all cursor-pointer select-none ${
                 task.completed
-                  ? 'bg-slate-950/40 border-emerald-900/40 text-slate-500 line-through decoration-emerald-500/40'
+                  ? 'bg-slate-950/40 border-emerald-900/40 text-slate-500'
                   : 'bg-slate-950 border-slate-800/80 hover:border-purple-500/50 text-slate-200'
               }`}
             >
-              <span className="text-sm font-mono flex-1 pr-4 truncate">{task.title}</span>
+              <span 
+                className={`text-sm font-mono flex-1 pr-4 truncate ${
+                  task.completed ? 'line-through decoration-emerald-500/40 text-slate-500/70' : ''
+                }`} 
+                title={task.title}
+              >{task.title}</span>
               <span className={`text-xs px-2 py-0.5 rounded-md font-mono ${
                 task.completed 
                   ? 'bg-emerald-950/50 text-emerald-400 border border-emerald-500/20' 

@@ -16,6 +16,8 @@ export default function LoginView({ onLoginSuccess }: LoginViewProps) {
     setError('');
     setLoading(true);
 
+    localStorage.removeItem('token');
+
     const endpoint = isRegister ? '/api/user/register' : '/api/user/login';
     
     try {
