@@ -228,12 +228,30 @@ export default function TaskLog({ onTaskChanged }: TaskLogProps) {
             ◀ Prev Day
           </button>
           
-          <div className="text-center">
-            <span className="text-xs uppercase text-slate-500 tracking-wider block">Quest Calendar</span>
-            <span className="text-sm font-bold text-purple-400">
+          <label className="text-center cursor-pointer group relative px-4 py-1 rounded-lg hover:bg-slate-900/60 border border-transparent hover:border-slate-800/60 transition-all">
+            <span className="text-[10px] uppercase text-slate-500 tracking-wider block group-hover:text-purple-400 transition-colors">
+              📅 Click to Jump
+            </span>
+            <span className="text-sm font-bold text-purple-400 group-hover:text-purple-300 transition-colors">
               {currentDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
             </span>
-          </div>
+
+            {/* O Input de Data Nativo escondido por cima do texto */}
+            <input 
+              type="date"
+              value={formatDateForJava(currentDate)}
+              onChange={(e) => {
+                if (e.target.value) {
+                  // Quando o usuário escolhe a data, quebramos os hifens para evitar bugs de fuso horário local
+                  const [year, month, day] = e.target.value.split('-').map(Number);
+                  setCurrentDate(new Date(year, month - 1, day));
+                }
+              }}
+              className="absolute inset-0 opacity-0 cursor-pointer w-full h-full text-[0px]"
+              // showPicker() ajuda navegadores modernos a forçarem a abertura do calendário ao clicar no container
+              onClick={(e) => (e.target as any).showPicker?.()} 
+            />
+          </label>
 
           <button 
             onClick={() => handleNavigateDay('next')}

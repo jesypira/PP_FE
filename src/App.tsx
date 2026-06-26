@@ -3,6 +3,13 @@ import LoginView from './views/LoginView';
 import TaskLog from './components/TaskLog'; 
 
 export default function App() {
+
+const [gameEventPopup, setGameEventPopup] = useState<{
+  isOpen: boolean;
+  type: 'LEVEL_UP' | 'LEVEL_DOWN' | 'STREAK';
+  value: number;
+} | null>(null);
+
   const [user, setuser] = useState<any>(null);
 
   const handleLoginSuccess = (userData: any) => {
@@ -14,7 +21,7 @@ export default function App() {
     setuser(null);                     
   };
 
-  const fetchPlayerData = async () => {
+  const fetchUserData = async () => {
     if (!user?.id) return;
     const token = localStorage.getItem('token');
     
@@ -24,6 +31,20 @@ export default function App() {
       });
       if (response.ok) {
         const freshData = await response.json();
+
+        const newLevel = freshData.level?.level || 1;
+        const newStreak = freshData.dailyStreak || 0;
+        const oldLevel = user.level?.level || 1;
+        const oldStreak = user.dailyStreak || 0;
+        
+        if (newLevel > oldLevel) {
+          setGameEventPopup({ isOpen: true, type: 'LEVEL_UP', value: newLevel });
+        } else if (newLevel < oldLevel) {
+          setGameEventPopup({ isOpen: true, type: 'LEVEL_DOWN', value: newLevel });
+        }else if (newStreak > oldStreak) {
+          setGameEventPopup({ isOpen: true, type: 'STREAK', value: newStreak });
+        }
+
         setuser(freshData); 
       }
     } catch (err) {
@@ -85,7 +106,89 @@ export default function App() {
             </div>
           </div>
 
-          <TaskLog onTaskChanged={fetchPlayerData} />
+          <TaskLog onTaskChanged={fetchUserData} />
+
+         
+
+          {/* 🌟 POPUP DE LEVEL UP / DOWN */}
+          {gameEventPopup?.isOpen && (
+            <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 z-50 font-mono">
+                <div className={`w-full max-w-sm border p-6 rounded-2xl shadow-2xl text-center transition-all ${
+                  gameEventPopup.type === 'STREAK' ? 'bg-slate-900 border-amber-500/40 shadow-amber-950/50' : 
+                  gameEventPopup.type === 'LEVEL_UP' ? 'bg-slate-900 border-purple-500/40 shadow-purple-950/50' : 
+                  'bg-slate-900 border-red-500/40 shadow-red-950/50'
+                }`}>
+
+                 {gameEventPopup.type === 'STREAK' && (
+                  <>
+                    <div className="text-5xl mb-2 animate-pulse">🔥 ⚔️ 🔥</div>
+                    <h2 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-amber-500 to-yellow-500 uppercase tracking-widest">
+                      STREAK MULTIPLIER!
+                    </h2>
+                    <p className="text-xs text-slate-400 mt-2">
+                      You have maintained your dedication. The fire burns bright!
+                    </p>
+                    
+                    <div className="my-6 inline-block bg-gradient-to-r from-amber-950 to-orange-950 border border-amber-500/30 px-6 py-2 rounded-xl">
+                      <span className="text-amber-400 text-xs uppercase block tracking-wider animate-pulse">Combo Active</span>
+                      <span className="text-xl font-bold text-orange-400">🔥 {gameEventPopup.value} DAYS STRAIGHT</span>
+                    </div>
+
+                    <button
+                      onClick={() => setGameEventPopup(null)}
+                      className="w-full py-2.5 font-bold text-xs rounded-xl transition-all uppercase tracking-wider shadow-lg bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 text-white shadow-orange-950"
+                    >
+                      Keep it Burning
+                    </button>
+                  </>
+                )}
+                
+                {/* Ícone e Título Dinâmico */}
+                {gameEventPopup.type === 'LEVEL_UP' && (
+                  <>
+                    <div className="text-5xl mb-3 animate-bounce">✨ ⚔️ ✨</div>
+                    <h2 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-amber-400 to-yellow-500 uppercase tracking-widest drop-shadow">
+                      Level Up!
+                    </h2>
+                    <p className="text-xs text-slate-400 mt-2">
+                      Your power grows! You have ascended to a new rank.
+                    </p>
+                    <div className="my-6 inline-block bg-gradient-to-r from-purple-950 to-indigo-950 border border-purple-500/30 px-6 py-2 rounded-xl">
+                      <span className="text-purple-400 text-xs uppercase block tracking-wider">New Rank</span>
+                      <span className="text-xl font-bold text-yellow-400">⭐ LEVEL {gameEventPopup.value}</span>
+                    </div>
+                       <button
+                        onClick={() => setGameEventPopup(null)}
+                        className={`w-full py-2.5 font-bold text-xs rounded-xl transition-all uppercase tracking-wider shadow-lg bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white shadow-purple-950`}
+                      >
+                        {'Claim Glory'}
+                      </button>
+                  </>
+                )}
+                {gameEventPopup.type === 'LEVEL_DOWN' && (
+                  <>
+                    <div className="text-5xl mb-3">💀 🩸 💀</div>
+                    <h2 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-rose-600 uppercase tracking-widest drop-shadow">
+                      Level Down
+                    </h2>
+                    <p className="text-xs text-slate-400 mt-2">
+                      A heavy toll was paid... You lost your footing.
+                    </p>
+                    <div className="my-6 inline-block bg-gradient-to-r from-red-950 to-rose-950 border border-red-500/30 px-6 py-2 rounded-xl">
+                      <span className="text-red-400 text-xs uppercase block tracking-wider">Current Rank</span>
+                      <span className="text-xl font-bold text-red-500">💔 LEVEL {gameEventPopup.value}</span>
+                    </div>
+                     <button
+                      onClick={() => setGameEventPopup(null)}
+                      className={`w-full py-2.5 font-bold text-xs rounded-xl transition-all uppercase tracking-wider shadow-lg bg-gradient-to-r from-red-600 to-rose-700 hover:from-red-500 hover:to-rose-600 text-white shadow-red-950`}
+                    >
+                      {'Accept Fate'}
+                    </button>
+                  </>
+                )}
+              </div>
+            </div>
+          )}
         </div>
       )}
     </main>
