@@ -51,6 +51,26 @@ export default function App() {
               Welcome, {user.username}!
             </h2>
             <p className="text-slate-400 text-sm mt-1">Your world awaits you.</p>
+
+            {/* BARRA DE XP DINÂMICA */}
+            <div className="mt-5 space-y-1.5 font-mono">
+              <div className="flex justify-between text-xs font-semibold">
+                <span className="text-purple-400">✨ EXPERIENCE PROGRESS</span>
+                <span className="text-slate-400">
+                  {user.xp || 0} / {user.nextLevel?.requiredXP || 100} XP
+                </span>
+              </div>
+              
+              {/* Container da Barra (Fundo) */}
+              <div className="w-full h-3 bg-slate-950 rounded-full border border-slate-800 overflow-hidden p-[2px]">
+                <div 
+                  className="h-full bg-gradient-to-r from-purple-600 via-indigo-500 to-purple-500 rounded-full transition-all duration-500 ease-out shadow-[0_0_12px_rgba(147,51,234,0.4)]"
+                  style={{ 
+                    width: `${Math.min(100, ((user.xp || 0) / (user.nextLevel?.requiredXP || 100)) * 100)}%` 
+                  }}
+                />
+              </div>
+            </div>
             
             <div className="mt-4 grid grid-cols-3 gap-4 font-mono text-xs text-center">
               <div className="bg-slate-950 p-3 rounded-xl border border-slate-800/50">
